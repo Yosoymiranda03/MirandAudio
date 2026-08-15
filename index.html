@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <title>Mirand-Audio</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#080910">
+
+    <!-- iOS: permite agregar a pantalla de inicio -->
+    <link rel="icon" href="icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="icon.svg">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Mirand-Audio">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="audio-processor">
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="logo-title">
+            <span class="logo-icon">🎧</span>
+            <div>
+                <h1>Mirand-Audio</h1>
+                <p>Procesador de Audio Pro</p>
+            </div>
+        </div>
+
+        <span class="creator">
+          By <a
+            href="https://instagram.com/yosoymiranda_03"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="instagram-link"
+        > @Yosoymiranda_03</a>
+          </span>
+    </header>
+
+
+    <!-- TOP BUTTONS -->
+    <div class="top-actions">
+
+        <button id="theme-toggle" class="small-button" aria-label="Cambiar tema claro u oscuro">
+            🌙 Tema
+        </button>
+
+        <button id="shortcuts-button" class="small-button" aria-label="Ver atajos de teclado">
+            ⌨️ Atajos
+        </button>
+
+    </div>
+
+
+    <!-- SHORTCUT MENU -->
+    <div id="shortcuts-menu" class="shortcuts-menu">
+
+        <div class="shortcut-header">
+            <h3>⌨️ Atajos de teclado</h3>
+
+            <button id="close-shortcuts" aria-label="Cerrar atajos de teclado">✕</button>
+        </div>
+
+        <div class="shortcut-list">
+
+            <div>
+                <kbd>Space</kbd>
+                <span>Reproducir / Pausar</span>
+            </div>
+
+            <div>
+                <kbd>←</kbd>
+                <span>Canción anterior</span>
+            </div>
+
+            <div>
+                <kbd>→</kbd>
+                <span>Siguiente canción</span>
+            </div>
+
+            <div>
+                <kbd>↑</kbd>
+                <span>Subir volumen</span>
+            </div>
+
+            <div>
+                <kbd>↓</kbd>
+                <span>Bajar volumen</span>
+            </div>
+
+            <div>
+                <kbd>M</kbd>
+                <span>Silenciar / Activar volumen</span>
+            </div>
+
+            <div>
+                <kbd>S</kbd>
+                <span>Shuffle</span>
+            </div>
+
+            <div>
+                <kbd>R</kbd>
+                <span>Repeat</span>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- UPLOAD -->
+    <div class="upload-section">
+
+        <div class="upload-icon">🎵</div>
+
+        <h2>Agregar canciones</h2>
+
+        <p class="hint">
+            Selecciona una o varias canciones para agregarlas a la cola.
+        </p>
+
+        <label for="audio-file" class="upload-button">
+            📁 Seleccionar canciones
+        </label>
+
+        <input
+            type="file"
+            id="audio-file"
+            accept="audio/*"
+            multiple
+        >
+
+    </div>
+
+
+    <!-- NOW PLAYING -->
+    <div class="now-playing">
+
+        <div class="album-placeholder">
+            🎵
+        </div>
+
+        <div class="track-information">
+
+            <span class="now-label">REPRODUCIENDO AHORA</span>
+
+            <h2 id="current-track-name">
+                Ninguna canción
+            </h2>
+
+            <div id="track-technical-info">
+                Esperando archivo...
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- VISUALIZER -->
+    <div class="visualizer-container">
+
+        <canvas id="audio-visualizer"></canvas>
+
+    </div>
+
+
+    <!-- PROGRESS -->
+    <div class="progress-section">
+
+        <span id="current-time">00:00</span>
+
+        <input
+            type="range"
+            id="progress-control"
+            min="0"
+            max="100"
+            value="0"
+            step="0.1"
+            aria-label="Progreso de la canción"
+        >
+
+        <span id="duration-time">00:00</span>
+
+    </div>
+
+
+    <!-- PLAYLIST -->
+    <div class="queue-container">
+
+        <div class="section-title">
+
+            <h3>🎶 Lista de Reproducción</h3>
+
+            <span>
+                Arrastra para reordenar
+            </span>
+
+        </div>
+
+        <ul id="playlist-queue">
+
+            <li class="empty-msg">
+                No hay canciones cargadas
+            </li>
+
+        </ul>
+
+    </div>
+
+
+    <!-- PLAYBACK -->
+    <div class="playback-controls">
+
+        <button
+            id="btn-back"
+            class="control-button"
+            title="Anterior"
+            aria-label="Canción anterior"
+        >
+            ◀◀
+            <span>Back</span>
+        </button>
+
+        <button
+            id="btn-play-pause"
+            class="play-button"
+            title="Reproducir/Pausar"
+            aria-label="Reproducir o pausar"
+        >
+            ▶ Play
+        </button>
+
+        <button
+            id="btn-next"
+            class="control-button"
+            title="Siguiente"
+            aria-label="Siguiente canción"
+        >
+            <span>Next</span>
+            ▶▶
+        </button>
+
+    </div>
+
+
+    <!-- PLAYBACK OPTIONS -->
+    <div class="player-options">
+
+        <button id="shuffle-button" class="option-button" aria-label="Activar o desactivar orden aleatorio">
+            🔀 Shuffle
+        </button>
+
+        <button id="repeat-button" class="option-button" aria-label="Cambiar modo de repetición">
+            🔁 Repeat: OFF
+        </button>
+
+    </div>
+
+
+    <!-- VOLUME -->
+    <div class="volume-control">
+
+        <button id="mute-button" aria-label="Silenciar o activar volumen">
+            🔊
+        </button>
+
+        <input
+            type="range"
+            id="volume-control"
+            min="0"
+            max="1"
+            step="0.01"
+            value="0.8"
+            aria-label="Volumen"
+        >
+
+        <span id="volume-val">
+            80%
+        </span>
+
+    </div>
+
+
+    <!-- AUDIO EFFECTS -->
+    <div class="controls">
+
+
+        <!-- PITCH -->
+        <div class="control-group">
+
+            <div class="label-container">
+
+                <label for="pitch-control">
+                    🎚️ Velocidad / Pitch
+                </label>
+
+                <span id="pitch-val">
+                    1.00x
+                </span>
+
+            </div>
+
+            <input
+                type="range"
+                id="pitch-control"
+                min="0.5"
+                max="2.0"
+                step="0.05"
+                value="1.0"
+            >
+
+            <div class="range-labels">
+                <span>0.50x</span>
+                <span>1.00x</span>
+                <span>2.00x</span>
+            </div>
+
+        </div>
+
+
+        <!-- REVERB -->
+        <div class="control-group">
+
+            <div class="label-container">
+
+                <label for="reverb-control">
+                    🌊 Reverb
+                </label>
+
+                <span id="reverb-val">
+                    60%
+                </span>
+
+            </div>
+
+            <input
+                type="range"
+                id="reverb-control"
+                min="0"
+                max="1"
+                step="0.01"
+                value="0.6"
+            >
+
+            <div class="range-labels">
+                <span>0%</span>
+                <span>50%</span>
+                <span>100%</span>
+            </div>
+
+        </div>
+
+
+        <!-- BASS -->
+        <div class="control-group">
+
+            <div class="label-container">
+
+                <label for="bass-control">
+                    🔥 Bass Boost
+                </label>
+
+                <span id="bass-val">
+                    0 dB
+                </span>
+
+            </div>
+
+            <input
+                type="range"
+                id="bass-control"
+                min="0"
+                max="12"
+                step="1"
+                value="0"
+            >
+
+        </div>
+
+
+        <!-- EQ -->
+        <div class="control-group">
+
+            <div class="label-container">
+
+                <label>
+                    🎛️ Ecualizador
+                </label>
+
+                <span id="eq-val">
+                    Flat
+                </span>
+
+            </div>
+
+            <div class="eq-row">
+
+                <label>
+                    Bass
+                    <input
+                        type="range"
+                        id="eq-bass"
+                        min="-12"
+                        max="12"
+                        value="0"
+                    >
+                </label>
+
+                <label>
+                    Mid
+                    <input
+                        type="range"
+                        id="eq-mid"
+                        min="-12"
+                        max="12"
+                        value="0"
+                    >
+                </label>
+
+                <label>
+                    Treble
+                    <input
+                        type="range"
+                        id="eq-treble"
+                        min="-12"
+                        max="12"
+                        value="0"
+                    >
+                </label>
+
+            </div>
+
+        </div>
+
+
+        <!-- VOCALS -->
+        <div class="control-group">
+
+            <div class="label-container">
+
+                <label for="vocal-control">
+                    🎤 Voz
+                </label>
+
+                <span id="vocal-val">
+                    Normal
+                </span>
+
+            </div>
+
+            <input
+                type="range"
+                id="vocal-control"
+                min="-1"
+                max="1"
+                step="0.05"
+                value="0"
+            >
+
+            <div class="range-labels">
+                <span>Reducir</span>
+                <span>Normal</span>
+                <span>Boost</span>
+            </div>
+
+        </div>
+
+
+        <!-- STEREO WIDTH -->
+        <div class="control-group">
+
+            <div class="label-container">
+
+                <label for="width-control">
+                    🎧 Stereo Width
+                </label>
+
+                <span id="width-val">
+                    100%
+                </span>
+
+            </div>
+
+            <input
+                type="range"
+                id="width-control"
+                min="0"
+                max="2"
+                step="0.01"
+                value="1"
+            >
+
+            <div class="range-labels">
+                <span>Mono</span>
+                <span>Normal</span>
+                <span>Wide</span>
+            </div>
+
+        </div>
+
+
+        <!-- CROSSFADE -->
+        <div class="control-group">
+
+            <div class="label-container">
+
+                <label for="crossfade-control">
+                    🌊 Crossfade
+                </label>
+
+                <span id="crossfade-val">
+                    5s
+                </span>
+
+            </div>
+
+            <input
+                type="range"
+                id="crossfade-control"
+                min="0"
+                max="10"
+                step="1"
+                value="5"
+            >
+
+        </div>
+
+    </div>
+
+
+    <!-- PRESETS -->
+    <div class="preset-section">
+
+        <div class="label-container">
+
+            <label>
+                🎛️ Presets
+            </label>
+
+            <span id="preset-status">
+                Personalizado
+            </span>
+
+        </div>
+
+        <div class="preset-buttons">
+
+            <button data-preset="normal">
+                🎵 Normal
+            </button>
+
+            <button data-preset="bass">
+                🔥 Bass Boost
+            </button>
+
+            <button data-preset="dream">
+                🌊 Dream
+            </button>
+
+            <button data-preset="headphones">
+                🎧 Headphones
+            </button>
+
+            <button data-preset="nightcore">
+                ⚡ Nightcore
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- EXPORT -->
+    <div class="action-panel">
+
+        <button
+            id="btn-download"
+            disabled
+        >
+            📥 Descargar Audio Editado (.wav)
+        </button>
+
+        <div id="status-text">
+            Esperando archivos...
+        </div>
+
+        <p class="export-note">
+            El volumen de reproducción no afecta al archivo exportado.
+        </p>
+
+    </div>
+
+
+    <!-- TECHNICAL INFO -->
+    <div class="technical-panel">
+
+        <h3>ℹ️ Información técnica</h3>
+
+        <div id="technical-details">
+            No hay canción seleccionada.
+        </div>
+
+    </div>
+
+
+    <!-- INSTAGRAM -->
+    <div class="social-section">
+
+        <p>
+            ¿Te gustó el proyecto?
+        </p>
+
+        <a
+            href="https://instagram.com/yosoymiranda_03"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="instagram-link"
+        >
+
+            <img
+                src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png"
+                alt="Instagram"
+            >
+
+            <span>
+                @Yosoymiranda_03
+            </span>
+
+        </a>
+
+    </div>
+
+</div>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>
