@@ -1,0 +1,18 @@
+{
+  "name": "Mirand-Audio — Procesador de Audio Pro",
+  "short_name": "Mirand-Audio",
+  "description": "Reproductor y procesador de audio con efectos: pitch, reverb, bass boost, ecualizador y más.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#080910",
+  "theme_color": "#080910",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
